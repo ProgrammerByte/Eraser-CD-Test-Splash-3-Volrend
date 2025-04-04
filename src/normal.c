@@ -203,18 +203,7 @@ void Normal_Compute() {
   }
 
 #ifndef SERIAL_PREPROC
-  {
-    pthread_mutex_lock(&(Global_SlaveBarrier_bar_mutex));
-    Global_SlaveBarrier_bar_teller++;
-    if (Global_SlaveBarrier_bar_teller == (num_nodes)) {
-      Global_SlaveBarrier_bar_teller = 0;
-      pthread_cond_broadcast(&(Global_SlaveBarrier_bar_cond));
-    } else {
-      pthread_cond_wait(&(Global_SlaveBarrier_bar_cond),
-                        &(Global_SlaveBarrier_bar_mutex));
-    }
-    pthread_mutex_unlock(&(Global_SlaveBarrier_bar_mutex));
-  };
+  { pthread_barrier_wait(&(Global_SlaveBarrier)); };
 #endif
 }
 

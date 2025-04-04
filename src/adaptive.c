@@ -97,51 +97,18 @@ void Ray_Trace(long my_node) {
   /* Invoke adaptive or non-adaptive ray tracer                          */
   if (adaptive) {
 
-    {
-      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-      Global_TimeBarrier_bar_teller++;
-      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-        Global_TimeBarrier_bar_teller = 0;
-        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-      } else {
-        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                          &(Global_TimeBarrier_bar_mutex));
-      }
-      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-    };
+    { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
     { (starttime) = time(0); };
     Pre_Shade(my_node);
 
-    {
-      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-      Global_TimeBarrier_bar_teller++;
-      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-        Global_TimeBarrier_bar_teller = 0;
-        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-      } else {
-        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                          &(Global_TimeBarrier_bar_mutex));
-      }
-      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-    };
+    { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
     Ray_Trace_Adaptively(my_node);
 
     { (stoptime) = time(0); };
 
-    {
-      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-      Global_TimeBarrier_bar_teller++;
-      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-        Global_TimeBarrier_bar_teller = 0;
-        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-      } else {
-        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                          &(Global_TimeBarrier_bar_mutex));
-      }
-      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-    };
+    { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
     mclock(stoptime, starttime, &exectime);
 
@@ -152,89 +119,34 @@ void Ray_Trace(long my_node) {
 
     if (highest_sampling_boxlen > 1) {
 
-      {
-        pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-        Global_TimeBarrier_bar_teller++;
-        if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-          Global_TimeBarrier_bar_teller = 0;
-          pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-        } else {
-          pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                            &(Global_TimeBarrier_bar_mutex));
-        }
-        pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-      };
+      { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
       { (starttime) = time(0); };
       Interpolate_Recursively(my_node);
 
       { (stoptime) = time(0); };
 
-      {
-        pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-        Global_TimeBarrier_bar_teller++;
-        if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-          Global_TimeBarrier_bar_teller = 0;
-          pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-        } else {
-          pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                            &(Global_TimeBarrier_bar_mutex));
-        }
-        pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-      };
+      { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
       mclock(stoptime, starttime, &exectime1);
     }
 
   } else {
 
-    {
-      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-      Global_TimeBarrier_bar_teller++;
-      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-        Global_TimeBarrier_bar_teller = 0;
-        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-      } else {
-        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                          &(Global_TimeBarrier_bar_mutex));
-      }
-      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-    };
+    { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
     { (starttime) = time(0); };
 
     Pre_Shade(my_node);
 
     Global_Queue[my_node][0] = 0;
-    {
-      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-      Global_TimeBarrier_bar_teller++;
-      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-        Global_TimeBarrier_bar_teller = 0;
-        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-      } else {
-        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                          &(Global_TimeBarrier_bar_mutex));
-      }
-      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-    };
+    { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
     Ray_Trace_Non_Adaptively(my_node);
 
     { (stoptime) = time(0); };
 
-    {
-      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-      Global_TimeBarrier_bar_teller++;
-      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-        Global_TimeBarrier_bar_teller = 0;
-        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-      } else {
-        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                          &(Global_TimeBarrier_bar_mutex));
-      }
-      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-    };
+    { pthread_barrier_wait(&(Global_TimeBarrier)); };
 
     mclock(stoptime, starttime, &exectime);
     exectime1 = 0;
@@ -247,18 +159,7 @@ void Ray_Trace(long my_node) {
 
   { pthread_mutex_unlock(&(Global_CountLock)); };
 
-  {
-    pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
-    Global_TimeBarrier_bar_teller++;
-    if (Global_TimeBarrier_bar_teller == (num_nodes)) {
-      Global_TimeBarrier_bar_teller = 0;
-      pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
-    } else {
-      pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
-                        &(Global_TimeBarrier_bar_mutex));
-    }
-    pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
-  };
+  { pthread_barrier_wait(&(Global_TimeBarrier)); };
 }
 
 void Ray_Trace_Adaptively(long my_node) {

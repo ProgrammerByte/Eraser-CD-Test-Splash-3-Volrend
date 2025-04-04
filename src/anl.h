@@ -29,12 +29,8 @@
 
 volatile long Global_Index;
 volatile long Global_Queue[MAX_NUMPROC + 1][PAD];
-pthread_mutex_t Global_SlaveBarrier_bar_mutex;
-pthread_cond_t Global_SlaveBarrier_bar_cond;
-unsigned Global_SlaveBarrier_bar_teller;
-pthread_mutex_t Global_TimeBarrier_bar_mutex;
-pthread_cond_t Global_TimeBarrier_bar_cond;
-unsigned Global_TimeBarrier_bar_teller;
+pthread_barrier_t Global_SlaveBarrier;
+pthread_barrier_t Global_TimeBarrier;
 pthread_mutex_t Global_IndexLock;
 pthread_mutex_t Global_CountLock;
 pthread_mutex_t(Global_QLock)[MAX_NUMPROC + 1];

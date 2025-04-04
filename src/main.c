@@ -128,16 +128,8 @@ void Frame() {
   printf("*****Exited init_decomposition with num_nodes = %ld\n", num_nodes);
   fflush(stdout);
 
-  {
-    pthread_mutex_init(&(Global_SlaveBarrier_bar_mutex), NULL);
-    pthread_cond_init(&(Global_SlaveBarrier_bar_cond), NULL);
-    Global_SlaveBarrier_bar_teller = 0;
-  };
-  {
-    pthread_mutex_init(&(Global_TimeBarrier_bar_mutex), NULL);
-    pthread_cond_init(&(Global_TimeBarrier_bar_cond), NULL);
-    Global_TimeBarrier_bar_teller = 0;
-  };
+  pthread_barrier_init(Global_SlaveBarrier, NULL);
+  pthread_barrier_init(Global_TimeBarrier, NULL);
   { pthread_mutex_init(&(Global_IndexLock), NULL); };
   { pthread_mutex_init(&(Global_CountLock), NULL); };
   {
@@ -301,18 +293,7 @@ void Render_Loop() {
       local_mask_image_address =
           mask_image_address + mask_image_partition * my_node;
 
-      {
-        pthread_mutex_lock(&(Global_SlaveBarrier_bar_mutex));
-        Global_SlaveBarrier_bar_teller++;
-        if (Global_SlaveBarrier_bar_teller == (num_nodes)) {
-          Global_SlaveBarrier_bar_teller = 0;
-          pthread_cond_broadcast(&(Global_SlaveBarrier_bar_cond));
-        } else {
-          pthread_cond_wait(&(Global_SlaveBarrier_bar_cond),
-                            &(Global_SlaveBarrier_bar_mutex));
-        }
-        pthread_mutex_unlock(&(Global_SlaveBarrier_bar_mutex));
-      };
+      { pthread_barrier_wait(&(Global_SlaveBarrier)); };
 
       if (my_node == num_nodes - 1) {
         for (i = image_partition * my_node; i < image_length; i++) {
@@ -333,6 +314,7 @@ void Render_Loop() {
           }
         }
       }
+
       if (my_node == ROOT) {
 #ifdef DIM
         Select_View((float)STEP_SIZE, dim);
@@ -341,18 +323,7 @@ void Render_Loop() {
 #endif
       }
 
-      {
-        pthread_mutex_lock(&(Global_SlaveBarrier_bar_mutex));
-        Global_SlaveBarrier_bar_teller++;
-        if (Global_SlaveBarrier_bar_teller == (num_nodes)) {
-          Global_SlaveBarrier_bar_teller = 0;
-          pthread_cond_broadcast(&(Global_SlaveBarrier_bar_cond));
-        } else {
-          pthread_cond_wait(&(Global_SlaveBarrier_bar_cond),
-                            &(Global_SlaveBarrier_bar_mutex));
-        }
-        pthread_mutex_unlock(&(Global_SlaveBarrier_bar_mutex));
-      };
+      { pthread_barrier_wait(&(Global_SlaveBarrier)); };
 
       Global_Queue[num_nodes][0] = num_nodes;
       Global_Queue[my_node][0] = 0;
