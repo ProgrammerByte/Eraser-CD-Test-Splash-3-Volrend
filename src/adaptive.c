@@ -113,11 +113,18 @@ void Ray_Trace(long my_node) {
     { (starttime) = time(0); };
     Pre_Shade(my_node);
 
-    { pthread_mutex_lock(&(Global_CountLock)); };
-    Global_Counter--;
-    { pthread_mutex_unlock(&(Global_CountLock)); };
-    while (Global_Counter)
-      ;
+    {
+      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
+      Global_TimeBarrier_bar_teller++;
+      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
+        Global_TimeBarrier_bar_teller = 0;
+        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
+      } else {
+        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
+                          &(Global_TimeBarrier_bar_mutex));
+      }
+      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
+    };
 
     Ray_Trace_Adaptively(my_node);
 
@@ -198,11 +205,19 @@ void Ray_Trace(long my_node) {
 
     Pre_Shade(my_node);
 
-    { pthread_mutex_lock(&(Global_CountLock)); };
-    Global_Counter--;
-    { pthread_mutex_unlock(&(Global_CountLock)); };
-    while (Global_Counter)
-      ;
+    Global_Queue[my_node][0] = 0;
+    {
+      pthread_mutex_lock(&(Global_TimeBarrier_bar_mutex));
+      Global_TimeBarrier_bar_teller++;
+      if (Global_TimeBarrier_bar_teller == (num_nodes)) {
+        Global_TimeBarrier_bar_teller = 0;
+        pthread_cond_broadcast(&(Global_TimeBarrier_bar_cond));
+      } else {
+        pthread_cond_wait(&(Global_TimeBarrier_bar_cond),
+                          &(Global_TimeBarrier_bar_mutex));
+      }
+      pthread_mutex_unlock(&(Global_TimeBarrier_bar_mutex));
+    };
 
     Ray_Trace_Non_Adaptively(my_node);
 
@@ -311,7 +326,7 @@ void Ray_Trace_Adaptive_Box(long outx, long outy, long boxlen) {
   long half_boxlen;
   long min_volume_color, max_volume_color;
   float foutx, fouty;
-  volatile long imask;
+  long imask;
 
   PIXEL *pixel_address;
 
@@ -431,8 +446,9 @@ void Ray_Trace_Non_Adaptively(long my_node) {
   lnum_yblocks = ROUNDUP((float)num_yqueue / (float)block_ylen);
   lnum_blocks = lnum_xblocks * lnum_yblocks;
   local_node = my_node;
-  Global_Queue[local_node][0] = 0;
+  { pthread_mutex_lock(&((Global_QLock)[(num_nodes)])); };
   while (Global_Queue[num_nodes][0] > 0) {
+    { pthread_mutex_unlock(&((Global_QLock)[(num_nodes)])); }
     xstart = (local_node % image_section[X]) * num_xqueue;
     xstop = MIN(xstart + num_xqueue, image_len[X]);
     ystart = (local_node / image_section[X]) * num_yqueue;
@@ -465,10 +481,19 @@ void Ray_Trace_Non_Adaptively(long my_node) {
       { pthread_mutex_unlock(&((Global_QLock)[(num_nodes)])); };
     }
     local_node = (local_node + 1) % num_nodes;
+    { pthread_mutex_lock(&((Global_QLock)[(num_nodes)])); };
+    { pthread_mutex_lock(&((Global_QLock)[(local_node)])); };
     while (Global_Queue[local_node][0] >= lnum_blocks &&
-           Global_Queue[num_nodes][0] > 0)
+           Global_Queue[num_nodes][0] > 0) {
+      { pthread_mutex_unlock(&((Global_QLock)[(local_node)])); };
+      { pthread_mutex_unlock(&((Global_QLock)[(num_nodes)])); };
       local_node = (local_node + 1) % num_nodes;
+      { pthread_mutex_lock(&((Global_QLock)[(num_nodes)])); };
+      { pthread_mutex_lock(&((Global_QLock)[(local_node)])); };
+    }
+    { pthread_mutex_unlock(&((Global_QLock)[(local_node)])); };
   }
+  { pthread_mutex_unlock(&((Global_QLock)[(num_nodes)])); };
 }
 
 void Ray_Trace_Fast_Non_Adaptively(long my_node) {

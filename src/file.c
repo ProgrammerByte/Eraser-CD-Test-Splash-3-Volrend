@@ -20,6 +20,7 @@
 
 #include "incl.h"
 #include <fcntl.h>
+#include <unistd.h>
 
 #define PMODE 0644 /* RW for owner, R for group, R for others */
 #define RWMODE 0   /* Read-only                               */

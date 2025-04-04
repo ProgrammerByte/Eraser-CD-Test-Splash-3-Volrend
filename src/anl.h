@@ -27,7 +27,7 @@
 #include <pthread.h>
 #define PAD 256
 
-volatile long Global_Index, Global_Counter;
+volatile long Global_Index;
 volatile long Global_Queue[MAX_NUMPROC + 1][PAD];
 pthread_mutex_t Global_SlaveBarrier_bar_mutex;
 pthread_cond_t Global_SlaveBarrier_bar_cond;

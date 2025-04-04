@@ -351,7 +351,6 @@ void Render_Loop() {
         pthread_mutex_unlock(&(Global_SlaveBarrier_bar_mutex));
       };
 
-      Global_Counter = num_nodes;
       Global_Queue[num_nodes][0] = num_nodes;
       Global_Queue[my_node][0] = 0;
 
