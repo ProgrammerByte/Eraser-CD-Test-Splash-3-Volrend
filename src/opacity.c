@@ -81,7 +81,7 @@ void Compute_Opacity() {
 
     assert(__threads__ < __MAX_THREADS__);
     pthread_mutex_lock(&__intern__);
-    for (i = 0; i < () - 1; i++) {
+    for (i = 0; i < (num_nodes)-1; i++) {
       Error =
           pthread_create(&__tid__[__threads__++], NULL, Opacity_Compute, NULL);
       if (Error != 0) {

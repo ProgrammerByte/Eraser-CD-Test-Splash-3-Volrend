@@ -116,7 +116,7 @@ void Compute_Octree() {
 
     assert(__threads__ < __MAX_THREADS__);
     pthread_mutex_lock(&__intern__);
-    for (i = 0; i < () - 1; i++) {
+    for (i = 0; i < (num_nodes)-1; i++) {
       Error = pthread_create(&__tid__[__threads__++], NULL, Compute_Base, NULL);
       if (Error != 0) {
         printf("Error in pthread_create().\n");
@@ -145,7 +145,7 @@ void Compute_Octree() {
 
     assert(__threads__ < __MAX_THREADS__);
     pthread_mutex_lock(&__intern__);
-    for (i = 0; i < () - 1; i++) {
+    for (i = 0; i < (num_nodes)-1; i++) {
       Error = pthread_create(&__tid__[__threads__++], NULL,
                              Or_Neighbors_In_Base, NULL);
       if (Error != 0) {

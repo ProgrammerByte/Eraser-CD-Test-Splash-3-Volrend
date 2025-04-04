@@ -15,18 +15,16 @@
 /*************************************************************************/
 
 /******************************************************************************
-*                                                                             *
-*    user_options.h:  Compile-time user options                               *
-*                                                                             *
-******************************************************************************/
-
+ *                                                                             *
+ *    user_options.h:  Compile-time user options                               *
+ *                                                                             *
+ ******************************************************************************/
 
 /* For  varying image tile size*/
 
 #ifndef BLOCK_LEN
-#define BLOCK_LEN                4              /* image block size          */
+#define BLOCK_LEN 4 /* image block size          */
 #endif
-
 
 /* For doing different parts of the computation differently;
 If RENDER_ONLY is defined, then the program assumes that the .norm, .opc
@@ -50,25 +48,23 @@ values.
 */
 
 #if 0
-#define RENDER_ONLY                             /* to just do rendering from */
-#endif                                          /* .norm, .opc and .pyr files*/
+#define RENDER_ONLY /* to just do rendering from */
+#endif              /* .norm, .opc and .pyr files*/
 
 #if 0
-#define PREPROCESS                              /* to just do preprocessing  */
-#endif                                          /* and store result to files */
+#define PREPROCESS /* to just do preprocessing  */
+#endif             /* and store result to files */
 
 #if 1
-#define SERIAL_PREPROC                                  /* to do serial preprocessing*/
-#endif                                          /* with parallel rendering   */
+#define SERIAL_PREPROC /* to do serial preprocessing*/
+#endif                 /* with parallel rendering   */
 
 #if 0
-#define DIM                                     /* render rotations along    */
-#endif                                          /* all three Cartesian axes. */
-          /* This means that there will be 3*ROTATE_STEPS frames rendered    */
-
+#define DIM /* render rotations along    */
+#endif      /* all three Cartesian axes. */
+/* This means that there will be 3*ROTATE_STEPS frames rendered    */
 
 /* Algorithmic optimization options (adaptivity, use of octree)              */
 #ifndef HBOXLEN
-#define HBOXLEN                  4              /* highest_boxlen            */
+#define HBOXLEN 4 /* highest_boxlen            */
 #endif
-
