@@ -25,6 +25,8 @@
 #include "const.h"
 #include "my_types.h"
 
+extern int ROTATE_STEPS;
+
 extern long image_section[NI];
 extern long voxel_section[NM];
 

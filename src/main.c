@@ -54,6 +54,8 @@ pthread_mutex_t __intern__;
 
 #include "anl.h"
 
+int ROTATE_STEPS = 8;
+
 long image_section[NI];
 long voxel_section[NM];
 
@@ -78,23 +80,24 @@ void mclock(long stoptime, long starttime, long *exectime) {
 }
 
 int main(int argc, char *argv[]) {
-  if ((argc < 3) || (strncmp(argv[1], "-h", strlen("-h")) == 0) ||
+  if ((argc < 4) || (strncmp(argv[1], "-h", strlen("-h")) == 0) ||
       (strncmp(argv[1], "-h", strlen("-H")) == 0)) {
-    printf("usage:  VOLREND num_processes input_file\n");
+    printf("usage:  VOLREND num_processes input_file ROTATE_STEPS\n");
     exit(-1);
   }
 
   { __tid__[__threads__++] = pthread_self(); };
 
   num_nodes = atol(argv[1]);
+  ROTATE_STEPS = atoi(argv[3]);
 
   strcpy(filename, argv[2]);
 
-  if (argc == 4) {
-    if (strncmp(argv[3], "-a", strlen("-a")) == 0)
+  if (argc == 5) {
+    if (strncmp(argv[4], "-a", strlen("-a")) == 0)
       adaptive = YES;
     else {
-      printf("usage:  VOLREND num_processes input_file [-a] \n");
+      printf("usage:  VOLREND num_processes input_file ROTATE_STEPS [-a] \n");
       exit(-1);
     }
   }
@@ -282,6 +285,7 @@ void Render_Loop() {
   mask_image_partition = ROUNDUP(mask_image_length * inv_num_nodes);
 
 #ifdef DIM
+  int dim;
   for (dim = 0; dim < NM; dim++) {
 #endif
 
@@ -329,7 +333,6 @@ void Render_Loop() {
           }
         }
       }
-
       if (my_node == ROOT) {
 #ifdef DIM
         Select_View((float)STEP_SIZE, dim);
