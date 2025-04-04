@@ -471,7 +471,7 @@ void Allocate_Shading_Table(PIXEL **address1, long length) {
   /*  POSSIBLE ENHANCEMENT:  If you want to replicate the shade table,
       replace the macro with a simple malloc in the line below */
 
-  *address1 = (PIXEL *)malloc(length);
+  *address1 = (PIXEL *)malloc(length * sizeof(PIXEL));
   ;
 
   if (*address1 == NULL)
