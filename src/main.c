@@ -30,6 +30,7 @@
 
 #include "incl.h"
 #include "tiffio.h"
+#include "eraser.h"
 #include <limits.h>
 #include <string.h>
 #include <sys/resource.h>
@@ -80,6 +81,7 @@ void mclock(long stoptime, long starttime, long *exectime) {
 }
 
 int main(int argc, char *argv[]) {
+  EraserIgnoreOn();
   if ((argc < 4) || (strncmp(argv[1], "-h", strlen("-h")) == 0) ||
       (strncmp(argv[1], "-h", strlen("-H")) == 0)) {
     printf("usage:  VOLREND num_processes input_file ROTATE_STEPS\n");
@@ -102,6 +104,8 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  EraserIgnoreOff();
+
   Frame();
 
   /*  if (num_nodes > 1)
@@ -117,6 +121,7 @@ int main(int argc, char *argv[]) {
 
 void Frame() {
   long starttime, stoptime, exectime, i;
+  EraserIgnoreOn();
 
   Init_Options();
 
@@ -235,6 +240,7 @@ void Frame() {
 
   printf("\nRendering...\n");
   printf("node\tframe\ttime\titime\trays\thrays\tsamples trilirped\n");
+  EraserIgnoreOff();
 
   {
     long i, Error;
@@ -316,11 +322,13 @@ void Render_Loop() {
       }
 
       if (my_node == ROOT) {
+        EraserIgnoreOn();
 #ifdef DIM
         Select_View((float)STEP_SIZE, dim);
 #else
       Select_View((float)STEP_SIZE, Y);
 #endif
+        EraserIgnoreOff();
       }
 
       { pthread_barrier_wait(&(Global_SlaveBarrier)); };

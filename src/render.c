@@ -49,8 +49,10 @@ extern pthread_mutex_t __intern__;
 void Render(long my_node)           /* assumes direction is +Z */
 {
   if (my_node == ROOT) {
-  Observer_Transform_Light_Vector();
-  Compute_Observer_Transformed_Highlight_Vector();
+    EraserIgnoreOn();
+    Observer_Transform_Light_Vector();
+    Compute_Observer_Transformed_Highlight_Vector();
+    EraserIgnoreOff();
   }
   Ray_Trace(my_node);
 }

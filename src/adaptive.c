@@ -34,7 +34,6 @@ float invinvjacobian[NM][NM];    /*   [i][j] = 1.0 / invjacobian[i][j]        */
 long num_rays_traced;            /*   number of calls to Trace_Ray            */
 long num_traced_rays_hit_volume; /*   number of traced rays that hit volume   */
 long num_samples_trilirped;      /*   number of samples trilirped             */
-long itest;
 
 #define RAY_TRACED ((MAX_PIXEL + 1) / 2) /* Ray traced at this pixel  */
 #define START_RAY 1
@@ -168,8 +167,6 @@ void Ray_Trace_Adaptively(long my_node) {
   long num_xqueue, num_yqueue, num_queue, lnum_xblocks, lnum_yblocks,
       lnum_blocks;
   long xstart, xstop, ystart, ystop, local_node, work;
-
-  itest = 0;
 
   num_xqueue = ROUNDUP((float)image_len[X] / (float)image_section[X]);
   num_yqueue = ROUNDUP((float)image_len[Y] / (float)image_section[Y]);
